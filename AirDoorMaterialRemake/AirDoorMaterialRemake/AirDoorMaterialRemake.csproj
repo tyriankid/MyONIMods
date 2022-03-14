@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{3B461883-37E2-4632-9808-2B42FD15B570}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AirDoorMaterialRemake</RootNamespace>
+    <AssemblyName>AirDoorMaterialRemake</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>C:\Game\OxygenNotIncluded V490405\OxygenNotIncluded_Data\Managed\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>C:\Game\OxygenNotIncluded V490405\OxygenNotIncluded_Data\Managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>C:\Game\OxygenNotIncluded V490405\OxygenNotIncluded_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine">
+      <HintPath>C:\Game\OxygenNotIncluded V490405\OxygenNotIncluded_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>C:\Game\OxygenNotIncluded V490405\OxygenNotIncluded_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>C:\Game\OxygenNotIncluded V490405\OxygenNotIncluded_Data\Managed\UnityEngine.UI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AnimDoor_Door_OnPrefabInit.cs" />
+    <Compile Include="ToggleSwitch.cs" />
+    <Compile Include="FilterbleElementLiquid.cs" />
+    <Compile Include="FilterbleElement.cs" />
+    <Compile Include="DoorRotatableConsumer.cs" />
+    <Compile Include="Fan.cs" />
+    <Compile Include="InsulatedManualPressureDoorConfig.cs" />
+    <Compile Include="Loc_Initialize_Patch.cs" />
+    <Compile Include="STRINGS.cs" />
+    <Compile Include="GasSucker.cs" />
+    <Compile Include="suckerStateMachine.cs" />
+    <Compile Include="sucker.cs" />
+    <Compile Include="TinyInsulatedManualPressureGasDoorConfig.cs" />
+    <Compile Include="TinyInsulatedManualPressureDoorConfig.cs" />
+    <Compile Include="TinyInsulatedPressureDoorConfig.cs" />
+    <Compile Include="Db_Initialize_Patch.cs" />
+    <Compile Include="doorHelpers.cs" />
+    <Compile Include="InsulatedDoor_BuildingComplete_OnSpawn.cs" />
+    <Compile Include="InsulatingDoor.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="InsulatedPressureDoorConfig.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="mod.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="mod_info.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
