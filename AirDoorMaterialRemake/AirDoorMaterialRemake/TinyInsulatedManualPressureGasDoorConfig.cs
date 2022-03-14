@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ElementGenerator;
+using System;
 using TUNING;
 using UnityEngine;
 
@@ -20,17 +21,19 @@ public class TinyInsulatedManualPressureGasDoorConfig : IBuildingConfig
 		};
 		string[] construction_materials = array;
 		BuildingDef buildingDef = BuildingTemplates.CreateBuildingDef("TinyInsulatedManualPressureGasDoor", 1, 1, "Tiny_Insulated_door_manual_kanim", 30, 60f, construction_mass, construction_materials, 1600f, BuildLocationRule.Tile, BUILDINGS.DECOR.PENALTY.TIER2, NOISE_POLLUTION.NONE, 1f);
-		buildingDef.ThermalConductivity = 0.01f;
+		buildingDef.ThermalConductivity = 0.00f;
 		buildingDef.Overheatable = false;
 		buildingDef.Floodable = false;
 		buildingDef.Entombable = false;
 		buildingDef.IsFoundation = true;
+		buildingDef.RequiresPowerInput = false;
+		buildingDef.ViewMode = OverlayModes.Power.ID;
 		buildingDef.TileLayer = ObjectLayer.FoundationTile;
 		buildingDef.AudioCategory = "Metal";
 		buildingDef.PermittedRotations = PermittedRotations.R360;
 		buildingDef.SceneLayer = Grid.SceneLayer.TileMain;
 		buildingDef.ForegroundLayer = Grid.SceneLayer.InteriorWall;
-		buildingDef.LogicInputPorts = LogicOperationalController.CreateSingleInputPortList(new CellOffset(0, 0));
+		buildingDef.LogicInputPorts = DoorConfig.CreateSingleInputPortList(new CellOffset(0, 0));
 		SoundEventVolumeCache.instance.AddVolume("door_manual_kanim", "ManualPressureDoor_gear_LP", NOISE_POLLUTION.NOISY.TIER1);
 		SoundEventVolumeCache.instance.AddVolume("door_manual_kanim", "ManualPressureDoor_open", NOISE_POLLUTION.NOISY.TIER2);
 		SoundEventVolumeCache.instance.AddVolume("door_manual_kanim", "ManualPressureDoor_close", NOISE_POLLUTION.NOISY.TIER2);
@@ -41,56 +44,36 @@ public class TinyInsulatedManualPressureGasDoorConfig : IBuildingConfig
 	// Token: 0x06000006 RID: 6 RVA: 0x00002310 File Offset: 0x00000510
 	public override void ConfigureBuildingTemplate(GameObject go, Tag prefab_tag)
 	{
+		Door door = go.AddOrGet<Door>();
+		door.hasComplexUserControls = true;
+		door.unpoweredAnimSpeed = 1f;
+		door.doorType = Door.DoorType.ManualPressure;
+		go.AddOrGet<Insulator>();
+		go.AddOrGet<ZoneTile>();
+		go.AddOrGet<AccessControl>();
+		go.AddOrGet<KBoxCollider2D>();
+		Prioritizable.AddRef(go);
+		go.AddOrGet<CopyBuildingSettings>().copyGroupTag = GameTags.Door;
+		go.AddOrGet<Workable>().workTime = 5f;
+		UnityEngine.Object.DestroyImmediate(go.GetComponent<BuildingEnabledButton>());
 		//base.ConfigureBuildingTemplate(go, prefab_tag);
 
 		//BuildingConfigManager.Instance.IgnoreDefaultKComponent(typeof(RequiresFoundation), prefab_tag);
 
-        Door door = go.AddOrGet<Door>();
-        door.hasComplexUserControls = true;
-        door.unpoweredAnimSpeed = 0.65f;
-        door.doorType = Door.DoorType.ManualPressure;
 
 
-        SimCellOccupier simCellOccupier = go.AddOrGet<SimCellOccupier>();
 
-		simCellOccupier.setLiquidImpermeable = true;//不透水
-		simCellOccupier.setGasImpermeable = true;//不透气
+		//      SimCellOccupier simCellOccupier = go.AddOrGet<SimCellOccupier>();
 
-		simCellOccupier.doReplaceElement = false;
-		simCellOccupier.notifyOnMelt = true;
+		//simCellOccupier.setLiquidImpermeable = true;//不透水
+		//simCellOccupier.setGasImpermeable = true;//不透气
 
-        go.AddOrGet<Insulator>();
-        go.AddOrGet<ZoneTile>();
-        go.AddOrGet<AccessControl>();
-        go.AddOrGet<KBoxCollider2D>();
-        go.AddOrGet<TileTemperature>();
-		Prioritizable.AddRef(go);
-		go.AddOrGet<CopyBuildingSettings>().copyGroupTag = GameTags.Door;
-		go.AddOrGet<Workable>().workTime = 5f;
-		
+		//simCellOccupier.doReplaceElement = false;
+		//simCellOccupier.notifyOnMelt = true;
+
+
+
 		//UnityEngine.Object.DestroyImmediate(go.GetComponent<Switch>());
-
-		
-	}
-
-	// Token: 0x06000007 RID: 7 RVA: 0x0000238A File Offset: 0x0000058A
-	public override void DoPostConfigureComplete(GameObject go)
-	{
-		go.AddOrGet<LogicOperationalController>();
-		go.AddOrGetDef<OperationalController.Def>();
-
-
-		//DoorRotatableConsumer elementConsumer1 = go.AddComponent<DoorRotatableConsumer>();
-		//elementConsumer1.configuration = ElementConsumer.Configuration.AllGas;
-		//elementConsumer1.consumptionRate = 500f;//suckRate;
-		//elementConsumer1.storeOnConsume = true;
-		//elementConsumer1.showInStatusPanel = false;
-		//elementConsumer1.consumptionRadius = 1;
-		//elementConsumer1.rotatableCellOffset = new Vector3(0f, -1f);
-		//elementConsumer1.showDescriptor = false;
-
-		//go.AddOrGetDef<PoweredActiveController.Def>();
-		//BuildingTemplates.DoPostConfigure(go);
 		var storage = go.AddOrGet<Storage>();
 		storage.capacityKg = 50000f;
 		storage.showCapacityStatusItem = true;
@@ -99,6 +82,44 @@ public class TinyInsulatedManualPressureGasDoorConfig : IBuildingConfig
 		go.AddOrGet<GasSucker>();
 		//新增可筛选元素
 		go.AddOrGet<FilterbleElement>().elementState = Filterable.ElementState.Gas;
+
+	}
+
+	// Token: 0x06000007 RID: 7 RVA: 0x0000238A File Offset: 0x0000058A
+	public override void DoPostConfigureComplete(GameObject go)
+	{
+        //Door door = go.AddOrGet<Door>();
+        //door.hasComplexUserControls = true;
+        //door.unpoweredAnimSpeed = 0.65f;
+        //door.doorType = Door.DoorType.ManualPressure;
+        //EntityTemplateExtensions.AddOrGet<LogicOperationalController>(go);
+        //go.AddOrGetDef<OperationalController.Def>();
+
+
+        //go.AddOrGet<Insulator>();
+        //go.AddOrGet<ZoneTile>();
+        //go.AddOrGet<AccessControl>();
+        //go.AddOrGet<KBoxCollider2D>();
+        //go.AddOrGet<TileTemperature>();
+        //Prioritizable.AddRef(go);
+        //go.AddOrGet<CopyBuildingSettings>().copyGroupTag = GameTags.Door;
+        //go.AddOrGet<Workable>().workTime = 5f;
+        //UnityEngine.Object.DestroyImmediate(go.GetComponent<BuildingEnabledButton>());
+        go.GetComponent<AccessControl>().controlEnabled = true;
+        go.GetComponent<KBatchedAnimController>().initialAnim = "closed";
+
+        //DoorRotatableConsumer elementConsumer1 = go.AddComponent<DoorRotatableConsumer>();
+        //elementConsumer1.configuration = ElementConsumer.Configuration.AllGas;
+        //elementConsumer1.consumptionRate = 500f;//suckRate;
+        //elementConsumer1.storeOnConsume = true;
+        //elementConsumer1.showInStatusPanel = false;
+        //elementConsumer1.consumptionRadius = 1;
+        //elementConsumer1.rotatableCellOffset = new Vector3(0f, -1f);
+        //elementConsumer1.showDescriptor = false;
+
+        //go.AddOrGetDef<PoweredActiveController.Def>();
+        //BuildingTemplates.DoPostConfigure(go);
+
 		//go.AddOrGet<FilterbleElementGas>().SelectedTag = ElementLoader.FindElementByHash(SimHashes.Oxygen).tag;
 		//go.AddOrGet<FilterbleElementLiquid>().elementState = Filterable.ElementState.Liquid;
 

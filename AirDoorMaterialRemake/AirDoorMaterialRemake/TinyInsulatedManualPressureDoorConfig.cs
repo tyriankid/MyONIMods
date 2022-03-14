@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ElementGenerator;
+using System;
 using TUNING;
 using UnityEngine;
 
@@ -25,11 +26,12 @@ public class TinyInsulatedManualPressureDoorConfig : IBuildingConfig
 		buildingDef.Floodable = false;
 		buildingDef.Entombable = false;
 		buildingDef.IsFoundation = true;
+		buildingDef.RequiresPowerInput = false;
 		buildingDef.TileLayer = ObjectLayer.FoundationTile;
 		buildingDef.AudioCategory = "Metal";
 		buildingDef.SceneLayer = Grid.SceneLayer.TileMain;
 		buildingDef.ForegroundLayer = Grid.SceneLayer.InteriorWall;
-		buildingDef.LogicInputPorts = LogicOperationalController.CreateSingleInputPortList(new CellOffset(0, 0));
+		buildingDef.LogicInputPorts = DoorConfig.CreateSingleInputPortList(new CellOffset(0, 0));
 		buildingDef.PermittedRotations = PermittedRotations.R360;
 		SoundEventVolumeCache.instance.AddVolume("door_manual_kanim", "ManualPressureDoor_gear_LP", NOISE_POLLUTION.NOISY.TIER1);
 		SoundEventVolumeCache.instance.AddVolume("door_manual_kanim", "ManualPressureDoor_open", NOISE_POLLUTION.NOISY.TIER2);
@@ -40,10 +42,6 @@ public class TinyInsulatedManualPressureDoorConfig : IBuildingConfig
 	// Token: 0x06000006 RID: 6 RVA: 0x00002310 File Offset: 0x00000510
 	public override void ConfigureBuildingTemplate(GameObject go, Tag prefab_tag)
 	{
-		Door door = go.AddOrGet<Door>();
-		door.hasComplexUserControls = true;
-		door.unpoweredAnimSpeed = 0.65f;
-		door.doorType = Door.DoorType.ManualPressure;
 
 		SimCellOccupier simCellOccupier = go.AddOrGet<SimCellOccupier>();
 
@@ -53,6 +51,15 @@ public class TinyInsulatedManualPressureDoorConfig : IBuildingConfig
 		simCellOccupier.doReplaceElement = false;
 		simCellOccupier.notifyOnMelt = true;
 
+
+		Door door = go.AddOrGet<Door>();
+		door.hasComplexUserControls = true;
+		door.unpoweredAnimSpeed = 0.65f;
+		door.doorType = Door.DoorType.ManualPressure;
+
+		EntityTemplateExtensions.AddOrGet<LogicOperationalController>(go);
+		go.AddOrGetDef<OperationalController.Def>();
+
 		go.AddOrGet<Insulator>();
 		go.AddOrGet<ZoneTile>();
 		go.AddOrGet<AccessControl>();
@@ -61,14 +68,6 @@ public class TinyInsulatedManualPressureDoorConfig : IBuildingConfig
 		go.AddOrGet<CopyBuildingSettings>().copyGroupTag = GameTags.Door;
 		go.AddOrGet<Workable>().workTime = 5f;
 		UnityEngine.Object.DestroyImmediate(go.GetComponent<BuildingEnabledButton>());
-
-		
-	}
-
-	// Token: 0x06000007 RID: 7 RVA: 0x0000238A File Offset: 0x0000058A
-	public override void DoPostConfigureComplete(GameObject go)
-	{
-		EntityTemplateExtensions.AddOrGet<LogicOperationalController>(go);
 		//go.GetComponent<KPrefabID>().prefabInitFn += delegate (GameObject gameObject)
 		//{
 		//	new TinySuckDoorStateMachine.Instance(gameObject.GetComponent<KPrefabID>()).StartSM();
@@ -85,6 +84,13 @@ public class TinyInsulatedManualPressureDoorConfig : IBuildingConfig
 		EntityTemplateExtensions.AddOrGet<GasSucker>(go);
 		//新增可筛选元素
 		go.AddOrGet<FilterbleElement>().elementState = Filterable.ElementState.Liquid;
+
+	}
+
+	// Token: 0x06000007 RID: 7 RVA: 0x0000238A File Offset: 0x0000058A
+	public override void DoPostConfigureComplete(GameObject go)
+	{
+		
 
 		//var carpetDrip = go.AddOrGet<sucker>();
 		//go.GetComponent<KPrefabID>().AddTag(GameTags.FloorTiles, false);
